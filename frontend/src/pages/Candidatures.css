@@ -8,6 +8,19 @@
   color: var(--secondary);
 }
 
+.candidature-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.candidature-actions-gauche {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
 .table tbody tr.ligne-commentaire td {
   background: var(--background);
   border-left: 3px solid var(--primary);

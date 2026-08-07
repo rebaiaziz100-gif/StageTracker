@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
-import { getTaches, ajouterTache } from '../api/tachesApi'
+import { getTaches, ajouterTache, supprimerTache } from '../api/tachesApi'
 import { useAuth } from '../context/AuthContext'
+import { FaTrash } from 'react-icons/fa'
 import './Taches.css'
 
 const ROLES_AUTORISES = ['ADMIN', 'ENCADRANTENTREPRISE', 'ENCADRANTUNIVERSITAIRE']
@@ -26,6 +27,9 @@ function Taches() {
   const [encadrantId, setEncadrantId] = useState('')
   const [envoiEnCours, setEnvoiEnCours] = useState(false)
   const [message, setMessage] = useState(null)
+
+  const [suppressionEnCours, setSuppressionEnCours] = useState(null)
+  const [messageSuppression, setMessageSuppression] = useState(null)
 
   async function charger() {
     setChargement(true)
@@ -79,6 +83,28 @@ function Taches() {
     }
   }
 
+  async function handleSupprimer(id) {
+    if (!window.confirm('Supprimer cette tâche ?')) {
+      return
+    }
+
+    setSuppressionEnCours(id)
+    setMessageSuppression(null)
+
+    try {
+      await supprimerTache(id)
+
+      setMessageSuppression({ type: 'succes', texte: 'Tâche supprimée avec succès.' })
+      await charger()
+    } catch (err) {
+      console.error('Erreur suppression tache:', err)
+      const texte = err.response?.data?.message || 'Échec de la suppression de la tâche.'
+      setMessageSuppression({ type: 'erreur', texte })
+    } finally {
+      setSuppressionEnCours(null)
+    }
+  }
+
   if (chargement) {
     return <p>Chargement...</p>
   }
@@ -93,6 +119,12 @@ function Taches() {
 
       {message && (
         <p className={message.type === 'succes' ? 'succes' : 'erreur'}>{message.texte}</p>
+      )}
+
+      {messageSuppression && (
+        <p className={messageSuppression.type === 'succes' ? 'succes' : 'erreur'}>
+          {messageSuppression.texte}
+        </p>
       )}
 
       {utilisateur?.role && ROLES_AUTORISES.includes(utilisateur.role) && (
@@ -110,6 +142,7 @@ function Taches() {
               <th>Statut</th>
               <th>Encadrant</th>
               <th>Stage</th>
+              <th></th>
             </tr>
           </thead>
           <tbody>
@@ -122,6 +155,21 @@ function Taches() {
                 </td>
                 <td>{tache.encadrantNom}</td>
                 <td>{tache.stageId}</td>
+                <td className="tache-actions">
+                  <div className="tache-actions-gauche"></div>
+
+                  {utilisateur?.role && ROLES_AUTORISES.includes(utilisateur.role) && (
+                    <button
+                      className="btn btn-danger btn-sm"
+                      title="Supprimer"
+                      aria-label="Supprimer la tâche"
+                      onClick={() => handleSupprimer(tache.id)}
+                      disabled={suppressionEnCours === tache.id}
+                    >
+                      <FaTrash size={16} color="currentColor" />
+                    </button>
+                  )}
+                </td>
               </tr>
             ))}
           </tbody>

@@ -6,6 +6,7 @@ import {
   supprimerCandidature,
 } from '../api/candidaturesApi'
 import { useAuth } from '../context/AuthContext'
+import { FaTrash } from 'react-icons/fa'
 import './Candidatures.css'
 
 function classeBadgeStatut(statut) {
@@ -226,35 +227,38 @@ function Candidatures() {
                       </span>
                     </td>
                     <td>{candidature.dateDepot}</td>
-                    <td>
-                      {candidature.statut === 'EN_ATTENTE' && (
-                        <>
-                          <button
-                            className="btn btn-primary btn-sm"
-                            onClick={() => ouvrirFormulaire(candidature)}
-                          >
-                            Accepter
-                          </button>{' '}
-                          <button
-                            className="btn btn-danger btn-sm"
-                            onClick={() => ouvrirFormulaireRefus(candidature)}
-                          >
-                            Refuser
-                          </button>
-                        </>
-                      )}
+                    <td className="candidature-actions">
+                      <div className="candidature-actions-gauche">
+                        {candidature.statut === 'EN_ATTENTE' && (
+                          <>
+                            <button
+                              className="btn btn-primary btn-sm"
+                              onClick={() => ouvrirFormulaire(candidature)}
+                            >
+                              Accepter
+                            </button>
+                            <button
+                              className="btn btn-danger btn-sm"
+                              onClick={() => ouvrirFormulaireRefus(candidature)}
+                            >
+                              Refuser
+                            </button>
+                          </>
+                        )}
 
-                      {candidature.statut !== 'EN_ATTENTE' &&
-                        (aUnCommentaire ? (
-                          <button
-                            className="btn btn-secondary btn-sm"
-                            onClick={() => toggleCommentaire(candidature.id)}
-                          >
-                            {commentaireOuvert ? 'Masquer' : 'Voir le commentaire'}
-                          </button>
-                        ) : (
-                          <span className="candidature-aucun-commentaire">Aucun commentaire</span>
-                        ))}{' '}
+                        {candidature.statut !== 'EN_ATTENTE' &&
+                          (aUnCommentaire ? (
+                            <button
+                              className="btn btn-secondary btn-sm"
+                              onClick={() => toggleCommentaire(candidature.id)}
+                            >
+                              {commentaireOuvert ? 'Masquer' : 'Voir le commentaire'}
+                            </button>
+                          ) : (
+                            <span className="candidature-aucun-commentaire">Aucun commentaire</span>
+                          ))}
+                      </div>
+
                       {utilisateur?.role === 'ADMIN' && (
                         <button
                           className="btn btn-danger btn-sm"
@@ -263,7 +267,7 @@ function Candidatures() {
                           onClick={() => handleSupprimer(candidature.id)}
                           disabled={suppressionEnCours === candidature.id}
                         >
-                          🗑️
+                          <FaTrash size={16} color="currentColor" />
                         </button>
                       )}
                     </td>

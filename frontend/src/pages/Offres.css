@@ -6,10 +6,12 @@
 }
 
 .offre-carte {
+  position: relative;
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
   height: 100%;
+  padding-right: 3rem;
 }
 
 .offre-carte h2 {
@@ -25,8 +27,13 @@
   align-self: flex-start;
 }
 
-.offre-carte .btn-primary,
-.offre-carte .btn-danger {
+.offre-carte .btn-primary {
   margin-top: auto;
   align-self: flex-start;
+}
+
+.offre-carte-bouton-supprimer {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
 }

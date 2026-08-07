@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { getStages, validerStage, supprimerStage } from '../api/stagesApi'
 import { useAuth } from '../context/AuthContext'
+import { FaTrash } from 'react-icons/fa'
 import './Stages.css'
 
 function classeBadgeEtat(etat) {
@@ -125,16 +126,19 @@ function Stages() {
                 </td>
                 <td>{stage.dateDebut}</td>
                 <td>{stage.dateFin}</td>
-                <td>
-                  {stage.etat === 'TERMINE' && utilisateur?.role === 'ADMIN' && (
-                    <button
-                      className="btn btn-primary btn-sm"
-                      onClick={() => handleValider(stage.id)}
-                      disabled={validationEnCours === stage.id}
-                    >
-                      {validationEnCours === stage.id ? 'Validation...' : 'Valider'}
-                    </button>
-                  )}{' '}
+                <td className="stage-actions">
+                  <div className="stage-actions-gauche">
+                    {stage.etat === 'TERMINE' && utilisateur?.role === 'ADMIN' && (
+                      <button
+                        className="btn btn-primary btn-sm"
+                        onClick={() => handleValider(stage.id)}
+                        disabled={validationEnCours === stage.id}
+                      >
+                        {validationEnCours === stage.id ? 'Validation...' : 'Valider'}
+                      </button>
+                    )}
+                  </div>
+
                   {utilisateur?.role === 'ADMIN' && (
                     <button
                       className="btn btn-danger btn-sm"
@@ -143,7 +147,7 @@ function Stages() {
                       onClick={() => handleSupprimer(stage.id)}
                       disabled={suppressionEnCours === stage.id}
                     >
-                      🗑️
+                      <FaTrash size={16} color="currentColor" />
                     </button>
                   )}
                 </td>

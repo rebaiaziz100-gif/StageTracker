@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { getOffres, supprimerOffre } from '../api/offresApi'
 import { postuler } from '../api/candidaturesApi'
 import { useAuth } from '../context/AuthContext'
+import { FaTrash } from 'react-icons/fa'
 import './Offres.css'
 
 function Offres() {
@@ -133,13 +134,13 @@ function Offres() {
 
             {utilisateur?.role === 'ADMIN' && (
               <button
-                className="btn btn-danger btn-sm"
+                className="btn btn-danger btn-sm offre-carte-bouton-supprimer"
                 title="Supprimer"
                 aria-label="Supprimer l'offre"
                 onClick={() => handleSupprimer(offre.id)}
                 disabled={suppressionEnCours === offre.id}
               >
-                🗑️
+                <FaTrash size={16} color="currentColor" />
               </button>
             )}
           </div>
