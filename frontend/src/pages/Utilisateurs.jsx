@@ -151,6 +151,7 @@ function Utilisateurs() {
               <table className="table">
                 <thead>
                   <tr>
+                    <th>ID</th>
                     <th>Nom</th>
                     <th>Prénom</th>
                     <th>Email</th>
@@ -163,6 +164,7 @@ function Utilisateurs() {
                 <tbody>
                   {etudiants.map((etudiant) => (
                     <tr key={etudiant.userID}>
+                      <td>{etudiant.userID}</td>
                       <td>{etudiant.nom}</td>
                       <td>{etudiant.prenom}</td>
                       <td>{etudiant.email}</td>
@@ -206,6 +208,7 @@ function Utilisateurs() {
               <table className="table">
                 <thead>
                   <tr>
+                    <th>ID</th>
                     <th>Nom</th>
                     <th>Prénom</th>
                     <th>Email</th>
@@ -216,6 +219,7 @@ function Utilisateurs() {
                 <tbody>
                   {encadrants.map((encadrant) => (
                     <tr key={encadrant.userID}>
+                      <td>{encadrant.userID}</td>
                       <td>{encadrant.nom}</td>
                       <td>{encadrant.prenom}</td>
                       <td>{encadrant.email}</td>
