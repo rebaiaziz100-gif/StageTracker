@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react'
 import { getEntretiens, creerEntretien, supprimerEntretien } from '../api/entretiensApi'
+import { getCandidatures } from '../api/candidaturesApi'
+import { getEncadrants } from '../api/encadrantsApi'
 import { useAuth } from '../context/AuthContext'
 import { FaTrash } from 'react-icons/fa'
 import './Entretiens.css'
@@ -30,6 +32,11 @@ function Entretiens() {
   const [suppressionEnCours, setSuppressionEnCours] = useState(null)
   const [messageSuppression, setMessageSuppression] = useState(null)
 
+  const [candidaturesDisponibles, setCandidaturesDisponibles] = useState([])
+  const [chargementCandidatures, setChargementCandidatures] = useState(false)
+  const [encadrantsDisponibles, setEncadrantsDisponibles] = useState([])
+  const [chargementEncadrants, setChargementEncadrants] = useState(false)
+
   async function charger() {
     setChargement(true)
     setErreur('')
@@ -49,13 +56,29 @@ function Entretiens() {
     charger()
   }, [])
 
-  function ouvrirFormulaire() {
+  async function ouvrirFormulaire() {
     setDate('')
     setStatut('PLANIFIE')
     setIdCond('')
     setUserID('')
     setMessage(null)
     setModaleOuverte(true)
+
+    setChargementCandidatures(true)
+    setChargementEncadrants(true)
+    try {
+      const [candidaturesData, encadrantsData] = await Promise.all([
+        getCandidatures(),
+        getEncadrants(),
+      ])
+      setCandidaturesDisponibles(candidaturesData)
+      setEncadrantsDisponibles(encadrantsData)
+    } catch (err) {
+      console.error('Erreur chargement candidatures/encadrants:', err)
+    } finally {
+      setChargementCandidatures(false)
+      setChargementEncadrants(false)
+    }
   }
 
   function fermerFormulaire() {
@@ -200,25 +223,43 @@ function Entretiens() {
               </div>
 
               <div className="champ">
-                <label htmlFor="idCond">Candidature (ID)</label>
-                <input
+                <label htmlFor="idCond">Candidature</label>
+                <select
                   id="idCond"
-                  type="number"
                   value={idCond}
                   onChange={(e) => setIdCond(e.target.value)}
                   required
-                />
+                  disabled={chargementCandidatures}
+                >
+                  <option value="">
+                    {chargementCandidatures ? 'Chargement...' : 'Sélectionner une candidature'}
+                  </option>
+                  {candidaturesDisponibles.map((candidature) => (
+                    <option key={candidature.id} value={candidature.id}>
+                      {candidature.etudiantNom} {candidature.etudiantPrenom} ({candidature.id})
+                    </option>
+                  ))}
+                </select>
               </div>
 
               <div className="champ">
-                <label htmlFor="userID">Encadrant (ID)</label>
-                <input
+                <label htmlFor="userID">Encadrant</label>
+                <select
                   id="userID"
-                  type="number"
                   value={userID}
                   onChange={(e) => setUserID(e.target.value)}
                   required
-                />
+                  disabled={chargementEncadrants}
+                >
+                  <option value="">
+                    {chargementEncadrants ? 'Chargement...' : 'Sélectionner un encadrant'}
+                  </option>
+                  {encadrantsDisponibles.map((encadrant) => (
+                    <option key={encadrant.userID} value={encadrant.userID}>
+                      {encadrant.nom} {encadrant.prenom} ({encadrant.userID})
+                    </option>
+                  ))}
+                </select>
               </div>
 
               <div className="modale-actions">
