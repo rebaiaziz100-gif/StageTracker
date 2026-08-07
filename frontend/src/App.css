@@ -1,0 +1,5 @@
+.conteneur-page {
+  max-width: 1200px;
+  margin-left: var(--sidebar-largeur);
+  padding: calc(var(--navbar-hauteur) + 2rem) 2rem 2rem;
+}

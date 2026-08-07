@@ -1,0 +1,18 @@
+.candidatures-titre {
+  margin-bottom: 1.5rem;
+}
+
+.candidature-aucun-commentaire {
+  font-size: 0.85rem;
+  font-style: italic;
+  color: var(--secondary);
+}
+
+.table tbody tr.ligne-commentaire td {
+  background: var(--background);
+  border-left: 3px solid var(--primary);
+  padding: 0.65rem 1rem 0.65rem 1.35rem;
+  font-size: 0.85rem;
+  color: var(--text);
+  font-style: italic;
+}

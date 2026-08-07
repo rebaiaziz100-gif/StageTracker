@@ -1,0 +1,39 @@
+.topbar {
+  position: fixed;
+  top: 0;
+  left: var(--sidebar-largeur);
+  right: 0;
+  height: var(--navbar-hauteur);
+  background: var(--primary);
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  padding: 0 2rem;
+  z-index: 100;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+}
+
+.topbar-marque {
+  color: white;
+  font-weight: 700;
+  font-size: 1.1rem;
+}
+
+.topbar-utilisateur {
+  margin-left: auto;
+  color: white;
+  font-size: 0.85rem;
+  opacity: 0.85;
+}
+
+.topbar-deconnexion {
+  background: transparent;
+  border-color: rgba(255, 255, 255, 0.6);
+  color: white;
+}
+
+.topbar-deconnexion:hover:not(:disabled) {
+  background: var(--danger);
+  border-color: var(--danger);
+  color: white;
+}

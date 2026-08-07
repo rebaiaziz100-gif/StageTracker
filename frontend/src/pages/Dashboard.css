@@ -1,0 +1,12 @@
+.dashboard-titre {
+  margin-bottom: 1.5rem;
+}
+
+.dashboard-carte {
+  max-width: 480px;
+}
+
+.dashboard-carte p:last-child {
+  margin-bottom: 0;
+  color: var(--secondary);
+}

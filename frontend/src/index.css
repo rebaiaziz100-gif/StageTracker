@@ -1,0 +1,291 @@
+:root {
+  --primary: #1d4ed8;
+  --primary-hover: #1e3a8a;
+  --secondary: #64748b;
+  --background: #f1f5f9;
+  --text: #1e293b;
+  --border: #e2e8f0;
+  --success: #16a34a;
+  --danger: #dc2626;
+  --warning: #d97706;
+
+  --navbar-hauteur: 64px;
+  --sidebar-largeur: 220px;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: var(--background);
+  color: var(--text);
+  font-family:
+    system-ui,
+    'Segoe UI',
+    Roboto,
+    sans-serif;
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+h1,
+h2,
+h3 {
+  margin: 0 0 0.5rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+p {
+  margin: 0 0 0.5rem;
+}
+
+a {
+  color: inherit;
+}
+
+/* --- Boutons --- */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  padding: 0.55rem 1.1rem;
+  border-radius: 6px;
+  border: 1px solid transparent;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease,
+    color 0.15s ease;
+}
+
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.btn-primary {
+  background: var(--primary);
+  color: white;
+}
+
+.btn-primary:hover:not(:disabled) {
+  background: var(--primary-hover);
+}
+
+.btn-secondary {
+  background: white;
+  color: var(--text);
+  border-color: var(--border);
+}
+
+.btn-secondary:hover:not(:disabled) {
+  background: var(--background);
+}
+
+.btn-danger {
+  background: transparent;
+  color: var(--danger);
+  border-color: var(--danger);
+}
+
+.btn-danger:hover:not(:disabled) {
+  background: var(--danger);
+  color: white;
+}
+
+.btn-sm {
+  padding: 0.35rem 0.75rem;
+  font-size: 0.8rem;
+}
+
+/* --- Cartes --- */
+
+.card {
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  padding: 1.5rem;
+}
+
+/* --- Badges --- */
+
+.badge {
+  display: inline-block;
+  padding: 0.25rem 0.65rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.badge-success {
+  background: rgba(22, 163, 74, 0.12);
+  color: var(--success);
+}
+
+.badge-danger {
+  background: rgba(220, 38, 38, 0.12);
+  color: var(--danger);
+}
+
+.badge-warning {
+  background: rgba(217, 119, 6, 0.12);
+  color: var(--warning);
+}
+
+.badge-neutral {
+  background: rgba(100, 116, 139, 0.12);
+  color: var(--secondary);
+}
+
+.badge-info {
+  background: rgba(29, 78, 216, 0.12);
+  color: var(--primary);
+}
+
+/* --- Formulaires --- */
+
+.champ {
+  margin-bottom: 1rem;
+  text-align: left;
+}
+
+.champ label {
+  display: block;
+  margin-bottom: 0.35rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--secondary);
+}
+
+input,
+textarea,
+select {
+  width: 100%;
+  padding: 0.55rem 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-size: 0.9rem;
+  font-family: inherit;
+  color: var(--text);
+  background: white;
+}
+
+textarea {
+  min-height: 90px;
+  resize: vertical;
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(29, 78, 216, 0.15);
+}
+
+/* --- Messages --- */
+
+.erreur {
+  color: var(--danger);
+  background: rgba(220, 38, 38, 0.08);
+  padding: 0.65rem 1rem;
+  border-radius: 6px;
+  margin-bottom: 1rem;
+  font-size: 0.9rem;
+}
+
+.succes {
+  color: var(--success);
+  background: rgba(22, 163, 74, 0.08);
+  padding: 0.65rem 1rem;
+  border-radius: 6px;
+  margin-bottom: 1rem;
+  font-size: 0.9rem;
+}
+
+/* --- Tableaux --- */
+
+.table-conteneur {
+  overflow-x: auto;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: white;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table th,
+.table td {
+  padding: 0.75rem 1rem;
+  text-align: left;
+  border-bottom: 1px solid var(--border);
+  font-size: 0.9rem;
+}
+
+.table thead th {
+  background: var(--background);
+  color: var(--secondary);
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.table tbody tr:nth-child(even) {
+  background: rgba(100, 116, 139, 0.04);
+}
+
+.table tbody tr:hover {
+  background: rgba(29, 78, 216, 0.04);
+}
+
+.table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+/* --- Modale --- */
+
+.modale-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  z-index: 1000;
+}
+
+.modale-contenu {
+  background: white;
+  border-radius: 12px;
+  padding: 2rem;
+  width: 100%;
+  max-width: 480px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+  text-align: left;
+}
+
+.modale-actions {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 1.25rem;
+}
