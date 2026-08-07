@@ -1,0 +1,31 @@
+.utilisateurs-titre {
+  margin-bottom: 1rem;
+}
+
+.utilisateurs-onglets {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.utilisateurs-onglet {
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  padding: 0.6rem 0.25rem;
+  margin-right: 1.25rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--secondary);
+  cursor: pointer;
+}
+
+.utilisateurs-onglet:hover {
+  color: var(--text);
+}
+
+.utilisateurs-onglet-actif {
+  color: var(--primary);
+  border-bottom-color: var(--primary);
+}

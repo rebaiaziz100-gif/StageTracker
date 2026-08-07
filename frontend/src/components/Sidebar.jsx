@@ -8,6 +8,8 @@ const LIENS = [
   { to: '/candidatures', label: 'Candidatures', roles: ['ADMIN'] },
   { to: '/stages', label: 'Stages', roles: null },
   { to: '/taches', label: 'Tâches', roles: null },
+  { to: '/entretiens', label: 'Entretiens', roles: null },
+  { to: '/utilisateurs', label: 'Utilisateurs', roles: ['ADMIN'] },
 ]
 
 function Sidebar() {

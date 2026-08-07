@@ -9,6 +9,8 @@ import Offres from './pages/Offres'
 import Candidatures from './pages/Candidatures'
 import Stages from './pages/Stages'
 import Taches from './pages/Taches'
+import Entretiens from './pages/Entretiens'
+import Utilisateurs from './pages/Utilisateurs'
 import './App.css'
 
 function LoginRoute() {
@@ -70,6 +72,22 @@ function AppRoutes() {
             element={
               <ProtectedRoute>
                 <Taches />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/entretiens"
+            element={
+              <ProtectedRoute>
+                <Entretiens />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/utilisateurs"
+            element={
+              <ProtectedRoute>
+                <Utilisateurs />
               </ProtectedRoute>
             }
           />
