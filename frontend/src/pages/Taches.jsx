@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react'
 import { getTaches, ajouterTache, supprimerTache } from '../api/tachesApi'
+import { getStages } from '../api/stagesApi'
+import { getEncadrants } from '../api/encadrantsApi'
 import { useAuth } from '../context/AuthContext'
 import { FaTrash } from 'react-icons/fa'
 import './Taches.css'
@@ -31,6 +33,11 @@ function Taches() {
   const [suppressionEnCours, setSuppressionEnCours] = useState(null)
   const [messageSuppression, setMessageSuppression] = useState(null)
 
+  const [stagesDisponibles, setStagesDisponibles] = useState([])
+  const [chargementStages, setChargementStages] = useState(false)
+  const [encadrantsDisponibles, setEncadrantsDisponibles] = useState([])
+  const [chargementEncadrants, setChargementEncadrants] = useState(false)
+
   async function charger() {
     setChargement(true)
     setErreur('')
@@ -50,7 +57,7 @@ function Taches() {
     charger()
   }, [])
 
-  function ouvrirFormulaire() {
+  async function ouvrirFormulaire() {
     setNom('')
     setDescription('')
     setStatut('A_FAIRE')
@@ -58,6 +65,19 @@ function Taches() {
     setEncadrantId('')
     setMessage(null)
     setModaleOuverte(true)
+
+    setChargementStages(true)
+    setChargementEncadrants(true)
+    try {
+      const [stagesData, encadrantsData] = await Promise.all([getStages(), getEncadrants()])
+      setStagesDisponibles(stagesData)
+      setEncadrantsDisponibles(encadrantsData)
+    } catch (err) {
+      console.error('Erreur chargement stages/encadrants:', err)
+    } finally {
+      setChargementStages(false)
+      setChargementEncadrants(false)
+    }
   }
 
   function fermerFormulaire() {
@@ -213,25 +233,43 @@ function Taches() {
               </div>
 
               <div className="champ">
-                <label htmlFor="stageId">Stage (ID)</label>
-                <input
+                <label htmlFor="stageId">Stage</label>
+                <select
                   id="stageId"
-                  type="number"
                   value={stageId}
                   onChange={(e) => setStageId(e.target.value)}
                   required
-                />
+                  disabled={chargementStages}
+                >
+                  <option value="">
+                    {chargementStages ? 'Chargement...' : 'Sélectionner un stage'}
+                  </option>
+                  {stagesDisponibles.map((stage) => (
+                    <option key={stage.id} value={stage.id}>
+                      {stage.etudiantNom} - {stage.type} ({stage.id})
+                    </option>
+                  ))}
+                </select>
               </div>
 
               <div className="champ">
-                <label htmlFor="encadrantId">Encadrant (ID)</label>
-                <input
+                <label htmlFor="encadrantId">Encadrant</label>
+                <select
                   id="encadrantId"
-                  type="number"
                   value={encadrantId}
                   onChange={(e) => setEncadrantId(e.target.value)}
                   required
-                />
+                  disabled={chargementEncadrants}
+                >
+                  <option value="">
+                    {chargementEncadrants ? 'Chargement...' : 'Sélectionner un encadrant'}
+                  </option>
+                  {encadrantsDisponibles.map((encadrant) => (
+                    <option key={encadrant.userID} value={encadrant.userID}>
+                      {encadrant.nom} {encadrant.prenom} ({encadrant.userID})
+                    </option>
+                  ))}
+                </select>
               </div>
 
               <div className="modale-actions">
