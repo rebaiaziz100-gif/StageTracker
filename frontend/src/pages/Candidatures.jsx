@@ -5,6 +5,7 @@ import {
   refuserCandidature,
   supprimerCandidature,
 } from '../api/candidaturesApi'
+import { getEncadrants } from '../api/encadrantsApi'
 import { useAuth } from '../context/AuthContext'
 import { FaTrash } from 'react-icons/fa'
 import './Candidatures.css'
@@ -30,6 +31,9 @@ function Candidatures() {
   const [sujetPFE, setSujetPFE] = useState('')
   const [envoiEnCours, setEnvoiEnCours] = useState(false)
   const [messageAcceptation, setMessageAcceptation] = useState(null)
+
+  const [encadrantsDisponibles, setEncadrantsDisponibles] = useState([])
+  const [chargementEncadrants, setChargementEncadrants] = useState(false)
 
   const [candidatureARefuser, setCandidatureARefuser] = useState(null)
   const [commentaireRefus, setCommentaireRefus] = useState('')
@@ -78,7 +82,7 @@ function Candidatures() {
     return <p>Accès réservé aux administrateurs</p>
   }
 
-  function ouvrirFormulaire(candidature) {
+  async function ouvrirFormulaire(candidature) {
     setCandidatureSelectionnee(candidature)
     setEncadrantId('')
     setDateDebut('')
@@ -86,6 +90,16 @@ function Candidatures() {
     setType('ETE')
     setSujetPFE('')
     setMessageAcceptation(null)
+
+    setChargementEncadrants(true)
+    try {
+      const data = await getEncadrants()
+      setEncadrantsDisponibles(data)
+    } catch (err) {
+      console.error('Erreur chargement encadrants:', err)
+    } finally {
+      setChargementEncadrants(false)
+    }
   }
 
   function fermerFormulaire() {
@@ -292,14 +306,23 @@ function Candidatures() {
               <h2>Accepter la candidature de {candidatureSelectionnee.etudiantNom}</h2>
 
               <div className="champ">
-                <label htmlFor="encadrantId">Encadrant (ID)</label>
-                <input
+                <label htmlFor="encadrantId">Encadrant</label>
+                <select
                   id="encadrantId"
-                  type="number"
                   value={encadrantId}
                   onChange={(e) => setEncadrantId(e.target.value)}
                   required
-                />
+                  disabled={chargementEncadrants}
+                >
+                  <option value="">
+                    {chargementEncadrants ? 'Chargement...' : 'Sélectionner un encadrant'}
+                  </option>
+                  {encadrantsDisponibles.map((encadrant) => (
+                    <option key={encadrant.userID} value={encadrant.userID}>
+                      {encadrant.nom} {encadrant.prenom} ({encadrant.userID})
+                    </option>
+                  ))}
+                </select>
               </div>
 
               <div className="champ">
