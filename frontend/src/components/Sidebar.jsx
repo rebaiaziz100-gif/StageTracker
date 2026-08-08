@@ -10,6 +10,7 @@ const LIENS = [
   { to: '/taches', label: 'Tâches', roles: null },
   { to: '/entretiens', label: 'Entretiens', roles: null },
   { to: '/utilisateurs', label: 'Utilisateurs', roles: ['ADMIN'] },
+  { to: '/universites', label: 'Universités', roles: ['ADMIN'] },
 ]
 
 function Sidebar() {

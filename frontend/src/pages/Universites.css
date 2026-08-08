@@ -1,0 +1,20 @@
+.universites-titre {
+  margin-bottom: 1rem;
+}
+
+.universites-bouton-nouvelle {
+  margin-bottom: 1.25rem;
+}
+
+.universite-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.universite-actions-gauche {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}

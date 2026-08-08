@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react'
-import { getEntretiens, creerEntretien, supprimerEntretien } from '../api/entretiensApi'
+import { getEntretiens, creerEntretien, modifierEntretien, supprimerEntretien } from '../api/entretiensApi'
 import { getCandidatures } from '../api/candidaturesApi'
 import { getEncadrants } from '../api/encadrantsApi'
 import { useAuth } from '../context/AuthContext'
-import { FaTrash } from 'react-icons/fa'
+import BarreRecherche from '../components/BarreRecherche'
+import { FaTrash, FaPen } from 'react-icons/fa'
 import './Entretiens.css'
 
 const ROLES_NOUVEL_ENTRETIEN = ['ADMIN', 'ENCADRANTENTREPRISE', 'ENCADRANTUNIVERSITAIRE']
@@ -20,8 +21,11 @@ function Entretiens() {
   const [entretiens, setEntretiens] = useState([])
   const [chargement, setChargement] = useState(true)
   const [erreur, setErreur] = useState('')
+  const [recherche, setRecherche] = useState('')
+  const [candidaturesParId, setCandidaturesParId] = useState({})
 
   const [modaleOuverte, setModaleOuverte] = useState(false)
+  const [entretienEnEdition, setEntretienEnEdition] = useState(null)
   const [date, setDate] = useState('')
   const [statut, setStatut] = useState('PLANIFIE')
   const [idCond, setIdCond] = useState('')
@@ -42,8 +46,17 @@ function Entretiens() {
     setErreur('')
 
     try {
-      const data = await getEntretiens()
-      setEntretiens(data)
+      const [entretiensData, candidaturesData] = await Promise.all([
+        getEntretiens(),
+        getCandidatures(),
+      ])
+      setEntretiens(entretiensData)
+
+      const map = {}
+      candidaturesData.forEach((candidature) => {
+        map[candidature.id] = `${candidature.etudiantNom} ${candidature.etudiantPrenom}`
+      })
+      setCandidaturesParId(map)
     } catch (err) {
       console.error('Erreur chargement entretiens:', err)
       setErreur('Impossible de charger les entretiens')
@@ -57,10 +70,37 @@ function Entretiens() {
   }, [])
 
   async function ouvrirFormulaire() {
+    setEntretienEnEdition(null)
     setDate('')
     setStatut('PLANIFIE')
     setIdCond('')
     setUserID('')
+    setMessage(null)
+    setModaleOuverte(true)
+
+    setChargementCandidatures(true)
+    setChargementEncadrants(true)
+    try {
+      const [candidaturesData, encadrantsData] = await Promise.all([
+        getCandidatures(),
+        getEncadrants(),
+      ])
+      setCandidaturesDisponibles(candidaturesData)
+      setEncadrantsDisponibles(encadrantsData)
+    } catch (err) {
+      console.error('Erreur chargement candidatures/encadrants:', err)
+    } finally {
+      setChargementCandidatures(false)
+      setChargementEncadrants(false)
+    }
+  }
+
+  async function ouvrirFormulaireEdition(entretien) {
+    setEntretienEnEdition(entretien)
+    setDate(entretien.date)
+    setStatut(entretien.statut)
+    setIdCond(entretien.candidatureId)
+    setUserID(entretien.encadrantId)
     setMessage(null)
     setModaleOuverte(true)
 
@@ -91,14 +131,23 @@ function Entretiens() {
     setMessage(null)
 
     try {
-      await creerEntretien(date, statut, idCond, userID)
+      if (entretienEnEdition) {
+        await modifierEntretien(entretienEnEdition.id, date, statut, idCond, userID)
+        setMessage({ type: 'succes', texte: 'Entretien modifié avec succès.' })
+      } else {
+        await creerEntretien(date, statut, idCond, userID)
+        setMessage({ type: 'succes', texte: 'Entretien créé avec succès.' })
+      }
 
-      setMessage({ type: 'succes', texte: 'Entretien créé avec succès.' })
       setModaleOuverte(false)
       await charger()
     } catch (err) {
-      console.error('Erreur création entretien:', err)
-      const texte = err.response?.data?.message || "Échec de la création de l'entretien."
+      console.error('Erreur enregistrement entretien:', err)
+      const texte =
+        err.response?.data?.message ||
+        (entretienEnEdition
+          ? "Échec de la modification de l'entretien."
+          : "Échec de la création de l'entretien.")
       setMessage({ type: 'erreur', texte })
     } finally {
       setEnvoiEnCours(false)
@@ -135,6 +184,15 @@ function Entretiens() {
     return <p className="erreur">{erreur}</p>
   }
 
+  const entretiensFiltres = entretiens.filter((entretien) => {
+    const cible = recherche.toLowerCase()
+    const etudiantNom = candidaturesParId[entretien.candidatureId] || ''
+    return (
+      entretien.encadrantNom.toLowerCase().includes(cible) ||
+      etudiantNom.toLowerCase().includes(cible)
+    )
+  })
+
   return (
     <div>
       <h1 className="entretiens-titre">Entretiens</h1>
@@ -155,11 +213,19 @@ function Entretiens() {
         </button>
       )}
 
+      {utilisateur?.role === 'ADMIN' && (
+        <BarreRecherche
+          valeur={recherche}
+          onChange={setRecherche}
+          placeholder="Rechercher par encadrant ou étudiant..."
+        />
+      )}
+
       <div className="table-conteneur">
         <table className="table">
           <thead>
             <tr>
-              <th>Candidature</th>
+              <th>Étudiant</th>
               <th>Encadrant</th>
               <th>Date</th>
               <th>Statut</th>
@@ -167,16 +233,27 @@ function Entretiens() {
             </tr>
           </thead>
           <tbody>
-            {entretiens.map((entretien) => (
+            {entretiensFiltres.map((entretien) => (
               <tr key={entretien.id}>
-                <td>#{entretien.candidatureId}</td>
+                <td>{candidaturesParId[entretien.candidatureId] || `#${entretien.candidatureId}`}</td>
                 <td>{entretien.encadrantNom}</td>
                 <td>{entretien.date}</td>
                 <td>
                   <span className={classeBadgeStatut(entretien.statut)}>{entretien.statut}</span>
                 </td>
                 <td className="entretien-actions">
-                  <div className="entretien-actions-gauche"></div>
+                  <div className="entretien-actions-gauche">
+                    {utilisateur?.role === 'ADMIN' && (
+                      <button
+                        className="btn btn-secondary btn-sm"
+                        title="Modifier"
+                        aria-label="Modifier l'entretien"
+                        onClick={() => ouvrirFormulaireEdition(entretien)}
+                      >
+                        <FaPen size={14} color="currentColor" />
+                      </button>
+                    )}
+                  </div>
 
                   {utilisateur?.role === 'ADMIN' && (
                     <button
@@ -200,7 +277,7 @@ function Entretiens() {
         <div className="modale-overlay">
           <div className="modale-contenu">
             <form onSubmit={handleCreer}>
-              <h2>Nouvel entretien</h2>
+              <h2>{entretienEnEdition ? "Modifier l'entretien" : 'Nouvel entretien'}</h2>
 
               <div className="champ">
                 <label htmlFor="date">Date</label>
@@ -264,7 +341,7 @@ function Entretiens() {
 
               <div className="modale-actions">
                 <button type="submit" className="btn btn-primary" disabled={envoiEnCours}>
-                  {envoiEnCours ? 'Envoi...' : 'Créer'}
+                  {envoiEnCours ? 'Envoi...' : entretienEnEdition ? 'Enregistrer' : 'Créer'}
                 </button>
                 <button type="button" className="btn btn-secondary" onClick={fermerFormulaire}>
                   Annuler

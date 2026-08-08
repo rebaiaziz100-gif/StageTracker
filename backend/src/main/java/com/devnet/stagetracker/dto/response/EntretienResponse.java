@@ -14,4 +14,5 @@ public class EntretienResponse {
     private String statut;
     private Integer candidatureId;
     private String encadrantNom;
+    private Integer encadrantId;
 }

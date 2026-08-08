@@ -14,6 +14,11 @@ public class StageResponse {
     private LocalDate dateFin;
     private String etat;
     private String etudiantNom;
+    private Integer etudiantId;
     private String encadrantNom;
+    private Integer encadrantId;
+    private Integer candidatureId;
     private String type;
+    private String sujetPFE;
+    private LocalDate dateSoutenance;
 }

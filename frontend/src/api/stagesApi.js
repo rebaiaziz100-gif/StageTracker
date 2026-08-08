@@ -10,6 +10,32 @@ export async function validerStage(id) {
   return response.data
 }
 
+export async function modifierStage(
+  id,
+  type,
+  dateDebut,
+  dateFin,
+  etat,
+  etudiantId,
+  encadrantId,
+  candidatureId,
+  sujetPFE,
+  dateSoutenance,
+) {
+  const response = await axiosClient.put(`/stages/${id}`, {
+    type,
+    dateDebut,
+    dateFin,
+    etat,
+    etudiantId,
+    encadrantId,
+    candidatureId,
+    sujetPFE,
+    dateSoutenance,
+  })
+  return response.data
+}
+
 export async function supprimerStage(id) {
   const response = await axiosClient.delete(`/stages/${id}`)
   return response.data

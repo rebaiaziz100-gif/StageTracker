@@ -7,6 +7,7 @@ import {
 } from '../api/candidaturesApi'
 import { getEncadrants } from '../api/encadrantsApi'
 import { useAuth } from '../context/AuthContext'
+import BarreRecherche from '../components/BarreRecherche'
 import { FaTrash } from 'react-icons/fa'
 import './Candidatures.css'
 
@@ -22,6 +23,7 @@ function Candidatures() {
   const [candidatures, setCandidatures] = useState([])
   const [chargement, setChargement] = useState(true)
   const [erreur, setErreur] = useState('')
+  const [recherche, setRecherche] = useState('')
 
   const [candidatureSelectionnee, setCandidatureSelectionnee] = useState(null)
   const [encadrantId, setEncadrantId] = useState('')
@@ -191,6 +193,10 @@ function Candidatures() {
     return <p className="erreur">{erreur}</p>
   }
 
+  const candidaturesFiltrees = candidatures.filter((candidature) =>
+    candidature.etudiantNom.toLowerCase().includes(recherche.toLowerCase()),
+  )
+
   return (
     <div>
       <h1 className="candidatures-titre">Candidatures</h1>
@@ -213,6 +219,12 @@ function Candidatures() {
         </p>
       )}
 
+      <BarreRecherche
+        valeur={recherche}
+        onChange={setRecherche}
+        placeholder="Rechercher par nom d'étudiant..."
+      />
+
       <div className="table-conteneur">
         <table className="table">
           <thead>
@@ -225,7 +237,7 @@ function Candidatures() {
             </tr>
           </thead>
           <tbody>
-            {candidatures.map((candidature) => {
+            {candidaturesFiltrees.map((candidature) => {
               const aUnCommentaire =
                 candidature.commentaire && candidature.commentaire.trim() !== ''
               const commentaireOuvert = commentairesOuverts.has(candidature.id)

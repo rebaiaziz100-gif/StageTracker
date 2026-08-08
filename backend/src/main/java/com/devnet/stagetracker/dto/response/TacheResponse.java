@@ -13,4 +13,5 @@ public class TacheResponse {
     private String statut;
     private Integer stageId;
     private String encadrantNom;
+    private Integer encadrantId;
 }

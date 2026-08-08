@@ -90,6 +90,7 @@ public class TacheController {
         response.setStatut(tache.getStatut().name());
         response.setStageId(tache.getStage().getId());
         response.setEncadrantNom(tache.getEncadrant().getNom() + " " + tache.getEncadrant().getPrenom());
+        response.setEncadrantId(tache.getEncadrant().getUserID());
 
         return response;
     }

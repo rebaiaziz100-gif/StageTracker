@@ -14,3 +14,9 @@
   align-items: center;
   gap: 0.5rem;
 }
+
+.stage-actions-droite {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}

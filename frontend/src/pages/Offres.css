@@ -11,7 +11,7 @@
   flex-direction: column;
   gap: 0.5rem;
   height: 100%;
-  padding-right: 3rem;
+  padding-right: 5rem;
 }
 
 .offre-carte h2 {
@@ -32,8 +32,14 @@
   align-self: flex-start;
 }
 
-.offre-carte-bouton-supprimer {
+.offre-carte-actions-admin {
   position: absolute;
   top: 1rem;
   right: 1rem;
+  display: flex;
+  gap: 0.4rem;
+}
+
+.offres-bouton-nouvelle {
+  margin-bottom: 0.5rem;
 }

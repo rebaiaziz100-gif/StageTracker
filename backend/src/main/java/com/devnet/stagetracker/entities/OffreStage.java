@@ -33,7 +33,7 @@ public class OffreStage {
     }
 
     public Integer getId() { return idOff; }
-    public void setId(Integer id) { this.idOff = idOff; }
+    public void setId(Integer id) { this.idOff = id; }
 
     public String getTitre() { return titre; }
 

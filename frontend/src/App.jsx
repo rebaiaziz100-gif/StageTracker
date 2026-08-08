@@ -11,6 +11,7 @@ import Stages from './pages/Stages'
 import Taches from './pages/Taches'
 import Entretiens from './pages/Entretiens'
 import Utilisateurs from './pages/Utilisateurs'
+import Universites from './pages/Universites'
 import './App.css'
 
 function LoginRoute() {
@@ -88,6 +89,14 @@ function AppRoutes() {
             element={
               <ProtectedRoute>
                 <Utilisateurs />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/universites"
+            element={
+              <ProtectedRoute>
+                <Universites />
               </ProtectedRoute>
             }
           />

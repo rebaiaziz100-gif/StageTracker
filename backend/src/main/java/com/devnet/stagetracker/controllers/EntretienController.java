@@ -47,7 +47,20 @@ public class EntretienController {
     @PreAuthorize("hasAnyRole('ADMIN', 'ENCADRANTENTREPRISE', 'ENCADRANTUNIVERSITAIRE')")
     @PostMapping
     public ResponseEntity<Entretien> create(@RequestBody EntretienRequest request) {
+        Entretien entretien = construire(request);
+        Entretien savedEntretien = EntretienService.ajouter(entretien);
 
+        return ResponseEntity.ok(savedEntretien);
+    }
+
+    @PreAuthorize("hasAnyRole('ADMIN', 'ENCADRANTENTREPRISE', 'ENCADRANTUNIVERSITAIRE')")
+    @PutMapping("/{id}")
+    public ResponseEntity<Entretien> update(@PathVariable Integer id, @RequestBody EntretienRequest request) {
+        Entretien entretien = construire(request);
+        return ResponseEntity.ok(EntretienService.modifier(id, entretien));
+    }
+
+    private Entretien construire(EntretienRequest request) {
         Entretien entretien = new Entretien();
 
         entretien.setDate(LocalDate.parse(request.getDate()));
@@ -66,15 +79,7 @@ public class EntretienController {
 
         entretien.setEncadrant(encadrant);
 
-        Entretien savedEntretien = EntretienService.ajouter(entretien);
-
-        return ResponseEntity.ok(savedEntretien);
-    }
-
-    @PreAuthorize("hasAnyRole('ADMIN', 'ENCADRANTENTREPRISE', 'ENCADRANTUNIVERSITAIRE')")
-    @PutMapping("/{id}")
-    public ResponseEntity<Entretien> update(@PathVariable Integer id, @RequestBody Entretien offre) {
-        return ResponseEntity.ok(EntretienService.modifier(id, offre));
+        return entretien;
     }
 
     @PreAuthorize("hasAnyRole('ADMIN', 'ENCADRANTENTREPRISE', 'ENCADRANTUNIVERSITAIRE')")
@@ -92,6 +97,7 @@ public class EntretienController {
         response.setStatut(entretien.getStatut().name());
         response.setCandidatureId(entretien.getCandidature().getId());
         response.setEncadrantNom(entretien.getEncadrant().getNom() + " " + entretien.getEncadrant().getPrenom());
+        response.setEncadrantId(entretien.getEncadrant().getUserID());
 
         return response;
     }

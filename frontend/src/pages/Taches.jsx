@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react'
-import { getTaches, ajouterTache, supprimerTache } from '../api/tachesApi'
+import { getTaches, ajouterTache, modifierTache, supprimerTache } from '../api/tachesApi'
 import { getStages } from '../api/stagesApi'
 import { getEncadrants } from '../api/encadrantsApi'
 import { useAuth } from '../context/AuthContext'
-import { FaTrash } from 'react-icons/fa'
+import BarreRecherche from '../components/BarreRecherche'
+import { FaTrash, FaPen } from 'react-icons/fa'
 import './Taches.css'
 
 const ROLES_AUTORISES = ['ADMIN', 'ENCADRANTENTREPRISE', 'ENCADRANTUNIVERSITAIRE']
@@ -20,8 +21,10 @@ function Taches() {
   const [taches, setTaches] = useState([])
   const [chargement, setChargement] = useState(true)
   const [erreur, setErreur] = useState('')
+  const [recherche, setRecherche] = useState('')
 
   const [modaleOuverte, setModaleOuverte] = useState(false)
+  const [tacheEnEdition, setTacheEnEdition] = useState(null)
   const [nom, setNom] = useState('')
   const [description, setDescription] = useState('')
   const [statut, setStatut] = useState('A_FAIRE')
@@ -58,11 +61,36 @@ function Taches() {
   }, [])
 
   async function ouvrirFormulaire() {
+    setTacheEnEdition(null)
     setNom('')
     setDescription('')
     setStatut('A_FAIRE')
     setStageId('')
     setEncadrantId('')
+    setMessage(null)
+    setModaleOuverte(true)
+
+    setChargementStages(true)
+    setChargementEncadrants(true)
+    try {
+      const [stagesData, encadrantsData] = await Promise.all([getStages(), getEncadrants()])
+      setStagesDisponibles(stagesData)
+      setEncadrantsDisponibles(encadrantsData)
+    } catch (err) {
+      console.error('Erreur chargement stages/encadrants:', err)
+    } finally {
+      setChargementStages(false)
+      setChargementEncadrants(false)
+    }
+  }
+
+  async function ouvrirFormulaireEdition(tache) {
+    setTacheEnEdition(tache)
+    setNom(tache.nom)
+    setDescription(tache.description)
+    setStatut(tache.statut)
+    setStageId(tache.stageId)
+    setEncadrantId(tache.encadrantId)
     setMessage(null)
     setModaleOuverte(true)
 
@@ -90,14 +118,22 @@ function Taches() {
     setMessage(null)
 
     try {
-      await ajouterTache(nom, description, statut, stageId, encadrantId)
+      if (tacheEnEdition) {
+        await modifierTache(tacheEnEdition.id, nom, description, statut, stageId, encadrantId)
+        setMessage({ type: 'succes', texte: 'Tâche modifiée avec succès.' })
+      } else {
+        await ajouterTache(nom, description, statut, stageId, encadrantId)
+        setMessage({ type: 'succes', texte: 'Tâche ajoutée avec succès.' })
+      }
 
-      setMessage({ type: 'succes', texte: 'Tâche ajoutée avec succès.' })
       setModaleOuverte(false)
       await charger()
     } catch (err) {
-      console.error('Erreur ajout tache:', err)
-      setMessage({ type: 'erreur', texte: "Échec de l'ajout de la tâche." })
+      console.error('Erreur enregistrement tache:', err)
+      const texte = tacheEnEdition
+        ? 'Échec de la modification de la tâche.'
+        : "Échec de l'ajout de la tâche."
+      setMessage({ type: 'erreur', texte })
     } finally {
       setEnvoiEnCours(false)
     }
@@ -133,6 +169,10 @@ function Taches() {
     return <p className="erreur">{erreur}</p>
   }
 
+  const tachesFiltrees = taches.filter((tache) =>
+    tache.nom.toLowerCase().includes(recherche.toLowerCase()),
+  )
+
   return (
     <div>
       <h1 className="taches-titre">Tâches</h1>
@@ -153,6 +193,14 @@ function Taches() {
         </button>
       )}
 
+      {(utilisateur?.role === 'ADMIN' || utilisateur?.role === 'ETUDIANT') && (
+        <BarreRecherche
+          valeur={recherche}
+          onChange={setRecherche}
+          placeholder="Rechercher par nom de tâche..."
+        />
+      )}
+
       <div className="table-conteneur">
         <table className="table">
           <thead>
@@ -166,7 +214,7 @@ function Taches() {
             </tr>
           </thead>
           <tbody>
-            {taches.map((tache) => (
+            {tachesFiltrees.map((tache) => (
               <tr key={tache.id}>
                 <td>{tache.nom}</td>
                 <td>{tache.description}</td>
@@ -176,7 +224,18 @@ function Taches() {
                 <td>{tache.encadrantNom}</td>
                 <td>{tache.stageId}</td>
                 <td className="tache-actions">
-                  <div className="tache-actions-gauche"></div>
+                  <div className="tache-actions-gauche">
+                    {utilisateur?.role && ROLES_AUTORISES.includes(utilisateur.role) && (
+                      <button
+                        className="btn btn-secondary btn-sm"
+                        title="Modifier"
+                        aria-label="Modifier la tâche"
+                        onClick={() => ouvrirFormulaireEdition(tache)}
+                      >
+                        <FaPen size={14} color="currentColor" />
+                      </button>
+                    )}
+                  </div>
 
                   {utilisateur?.role && ROLES_AUTORISES.includes(utilisateur.role) && (
                     <button
@@ -200,7 +259,7 @@ function Taches() {
         <div className="modale-overlay">
           <div className="modale-contenu">
             <form onSubmit={handleAjouter}>
-              <h2>Nouvelle tâche</h2>
+              <h2>{tacheEnEdition ? 'Modifier la tâche' : 'Nouvelle tâche'}</h2>
 
               <div className="champ">
                 <label htmlFor="nom">Nom</label>
@@ -274,7 +333,7 @@ function Taches() {
 
               <div className="modale-actions">
                 <button type="submit" className="btn btn-primary" disabled={envoiEnCours}>
-                  {envoiEnCours ? 'Envoi...' : 'Ajouter'}
+                  {envoiEnCours ? 'Envoi...' : tacheEnEdition ? 'Enregistrer' : 'Ajouter'}
                 </button>
                 <button type="button" className="btn btn-secondary" onClick={fermerFormulaire}>
                   Annuler

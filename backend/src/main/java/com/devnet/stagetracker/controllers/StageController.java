@@ -119,8 +119,16 @@ public class StageController {
         response.setDateFin(stage.getDateFin());
         response.setEtat(stage.getEtat().name());
         response.setEtudiantNom(stage.getEtudiant().getNom() + " " + stage.getEtudiant().getPrenom());
+        response.setEtudiantId(stage.getEtudiant().getUserID());
         response.setEncadrantNom(stage.getEncadrant().getNom() + " " + stage.getEncadrant().getPrenom());
+        response.setEncadrantId(stage.getEncadrant().getUserID());
+        response.setCandidatureId(stage.getCandidature().getId());
         response.setType(stage instanceof StagePfe ? "PFE" : "ETE");
+
+        if (stage instanceof StagePfe stagePfe) {
+            response.setSujetPFE(stagePfe.getSujetPFE());
+            response.setDateSoutenance(stagePfe.getDateSoutenance());
+        }
 
         return response;
     }
